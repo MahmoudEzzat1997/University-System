@@ -1,0 +1,674 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject University.Data.ApplicationDbContext App
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>@ViewData["Title"] - UniversitySystem</title>
+    <!-- HTML5 Shim and Respond.js IE9 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="CodedThemes">
+    <meta name="keywords" content=" Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
+    <meta name="author" content="CodedThemes">
+    <!-- Favicon icon -->
+    <link rel="icon" href="~/adminAssets/images/favicon.ico" type="image/x-icon">
+    <!-- Google font-->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+    <!-- Required Fremwork -->
+    <link rel="stylesheet" type="text/css" href="~/adminAssets/css/bootstrap/css/bootstrap.min.css">
+    <!-- themify-icons line icon -->
+    <link rel="stylesheet" type="text/css" href="~/adminAssets/icon/themify-icons/themify-icons.css">
+    <!-- ico font -->
+    <link rel="stylesheet" type="text/css" href="~/adminAssets/icon/icofont/css/icofont.css">
+    <!-- Style.css -->
+    <link rel="stylesheet" type="text/css" href="~/adminAssets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="~/adminAssets/css/jquery.mCustomScrollbar.css" Dashboard>
+
+    <link rel="stylesheet" type="text/css" rel="stylesheet" href="~/css/chat.css" />
+
+
+    @*<link href="~/lib/bootstrap/dist/css/bootstrap (1).css" rel="stylesheet" />*@
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+    <style>
+        .alert {
+            padding: 20px;
+            background-color: #f44336;
+            color: white;
+        }
+
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            .closebtn:hover {
+                color: black;
+            }
+    </style>
+</head>
+
+<body>
+    <!-- Pre-loader start -->
+    <div class="theme-loader">
+        <div class="ball-scale">
+            <div class='contain'>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Pre-loader end -->
+    <div id="pcoded" class="pcoded">
+        <div class="pcoded-overlay-box"></div>
+        <div class="pcoded-container navbar-wrapper">
+
+            <nav class="navbar header-navbar pcoded-header">
+                <div class="navbar-wrapper">
+
+                    <div class="navbar-logo">
+                        <a class="mobile-menu" id="mobile-collapse" href="#!">
+                            <i class="ti-menu"></i>
+                        </a>
+                        <a class="mobile-search morphsearch-search" href="#">
+                            <i class="ti-search"></i>
+                        </a>
+                        <a href="index.html">
+                            <img class="img-fluid" src="~/adminAssets/images/logo.png" alt="Theme-Logo" />
+                        </a>
+                        <a class="mobile-options">
+                            <i class="ti-more"></i>
+                        </a>
+                    </div>
+
+                    <div class="navbar-container container-fluid">
+                        <ul class="nav-left">
+                            <li>
+                                <div class="sidebar_toggle"><a href="javascript:void(0)"><i class="ti-menu"></i></a></div>
+                            </li>
+
+                            <li>
+                                <a href="#!" onclick="javascript:toggleFullScreen()">
+                                    <i class="ti-fullscreen"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        @{
+                            var _user = await UserManager.FindByNameAsync(User.Identity.Name);
+                            var name = _user.Fname + " " + _user.Lname;
+
+                        }
+
+                        <ul class="nav-right">
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="header-notification refreshhere">
+                                    @{ var notii = App.AdminContact.Where(a => a.Seen == false)
+                     .OrderByDescending(a => a.SendAt).ToList();}
+
+                                    <a onmouseover="UpdateSeen()" href="#!">
+                                        <i class="ti-bell"></i>
+                                        @if (notii.Count != 0)
+                                        {
+                                            <span class="badge bg-c-pink">@notii.Count</span>
+
+                                        }
+                                    </a>
+                                    <ul class="show-notification">
+                                        <li>
+                                            <h6>Notifications</h6>
+                                            @if (notii.Count == 0)
+                                            {
+                                                <label class="label label-success">Nothing New</label>
+                                            }
+                                            else
+                                            {
+                                                <label class="label label-danger">New</label>
+                                            }
+                                        </li>
+
+                                        @foreach (var noti in notii)
+                                        {
+                                            var user = App.Users.FirstOrDefault(u => u.Id == noti.UserID);
+                                            <li>
+                                                <div class="media">
+                                                    @{string mypath = "def.jfif";
+                                                        if (user.ImgName != "def.jfif")
+                                                        {
+                                                            mypath = user.UserName + "/" + user.ImgName;
+
+                                                        }
+                                                    }
+                                                    <img class="d-flex align-self-center img-radius" src="~/Images/@mypath" alt="Generic placeholder image">
+                                                    <div class="media-body">
+                                                        <h5 class="notification-user">@user.Fname @user.Lname</h5>
+                                                        <p class="notification-msg">@noti.Meessage</p>
+                                                        <span class="notification-time">@noti.SendAt.ToString()</span>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                                        }
+                                        <li>
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <a asp-action="ShowAllNoti" asp-controller="Admin">Show All</a>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+                                }
+                                else
+                                {
+
+                        <li class="header-notification refreshhere">
+                           
+
+                            @{var notii = App.AdminContact.Where(a => a.UserID == _user.Id && a.Response != null && a.ResponserID != null)
+                                .OrderByDescending(a => a.SendAt).ToList();
+                            }
+
+                            <a onmouseover="UpdateSeenUser()" href="#!">
+                                <i class="ti-bell"></i>
+                                @if (notii.Count != 0)
+                                {
+                                    <span class="badge bg-c-pink">@notii.Count</span>
+
+                                }
+                            </a>
+                            <ul class="show-notification">
+                                <li>
+                                    <h6>Notifications</h6>
+                                    @if (notii.Count == 0)
+                                    {
+                                        <label class="label label-success">Nothing New</label>
+                                    }
+                                    else
+                                    {
+                                        <label class="label label-danger">New</label>
+                                    }
+                                </li>
+
+                                @foreach (var noti in notii)
+                                {
+                                    var user = App.Users.FirstOrDefault(u => u.Id == noti.ResponserID);
+                                    <li>
+                                        <div class="media">
+                                            @{string mypath = "def.jfif";
+                                                if (user.ImgName != "def.jfif")
+                                                {
+                                                    mypath = user.UserName + "/" + user.ImgName;
+
+                                                }
+                                            }
+                                            <img class="d-flex align-self-center img-radius" src="~/Images/@mypath" alt="Generic placeholder image">
+                                            <div class="media-body">
+                                                <h5 class="notification-user">@user.Fname @user.Lname</h5>
+                                                <p class="notification-msg">@noti.Response</p>
+                                                <span class="notification-time">@noti.SendAt.ToString()</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            <li>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <div class="media">
+                                        <div class="media-body">
+
+                                            <a asp-action="ShowAllNoti" asp-controller="Admin">Show All</a>
+                                        </div>
+                                        
+                                    </div>
+                                }
+                                </li>
+                            </ul>
+                        </li>
+
+                            
+
+                    }
+                                
+
+                            }
+
+                            @*@if (User.IsInRole("Admin"))
+            {
+                <li class="header-notification">
+                    @{ var notii = App.AdminContact.Where(a => a.Seen == false)
+                                          .OrderByDescending(a => a.SendAt).ToList();}
+
+                    <a onmouseover="UpdateSeen()" href="#!">
+                        <i class="ti-bell"></i>
+                        @if (notii.Count != 0)
+                        {
+                            <span class="badge bg-c-pink">@notii.Count</span>
+
+                        }
+                    </a>
+                    <ul class="show-notification">
+                        <li>
+                            <h6>Notifications</h6>
+                            @if (notii.Count == 0)
+                            {
+                                <label class="label label-success">Nothing New</label>
+                            }
+                            else
+                            {
+                                <label class="label label-danger">New</label>
+                            }
+                        </li>
+
+                        @foreach (var noti in notii)
+                        {
+                            var user = App.Users.FirstOrDefault(u => u.Id == noti.UserID);
+                            <li>
+                                <div class="media">
+                                    <img class="d-flex align-self-center img-radius" src="~/Images/@user.UserName/@user.ImgName" alt="Generic placeholder image">
+                                    <div class="media-body">
+                                        <h5 class="notification-user">@user.Fname @user.Lname</h5>
+                                        <p class="notification-msg">@noti.Meessage</p>
+                                        <span class="notification-time">@noti.SendAt.ToString()</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                        <li>
+                            <div class="media">
+                                <div class="media-body">
+                                    <a asp-action="ShowAllNoti" asp-controller="Admin">Show All</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            }*@
+                            @*<li class="user-profile header-notification">
+                <a href="#!">
+                    <img src="~/adminAssets/images/avatar-4.jpg" class="img-radius" alt="User-Profile-Image">
+                    <span>John Doe</span>
+                    <i class="ti-angle-down"></i>
+                </a>
+                <ul class="show-notification profile-notification">
+                    <li>
+                        <a href="#!">
+                            <i class="ti-settings"></i> Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="ti-user"></i> Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="ti-email"></i> My Messages
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="ti-lock"></i> Lock Screen
+                        </a>
+                    </li>
+                    <li>
+                        <a href="auth-normal-sign-in.html">
+                            <i class="ti-layout-sidebar-left"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </li>*@
+
+                            <li><partial name="_LoginPartial" /></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div class="pcoded-main-container">
+                <div class="pcoded-wrapper">
+                    <nav class="pcoded-navbar">
+                        <div class="sidebar_toggle"><a href="#"><i class="icon-close icons"></i></a></div>
+                        <div class="pcoded-inner-navbar main-menu">
+                            <div class="">
+                                <div class="main-menu-header">
+                                    
+                                    <input type="hidden" value="@_user.Id" name="userid" />
+                                    <input type="hidden" value="@_user.Fname" name="username" />
+                                    <input type="hidden" value="@_user.ImgName" name="userimage" />
+                                    <input type="hidden" value="@_user.UserName" name="useremail" />
+
+
+                                    @{string img = "def.jfif";
+                                        if (_user.ImgName != "def.jfif")
+                                        {
+                                            img = _user.Email + "/" + @_user.ImgName;
+
+                                        }
+                                        <img asp-append-version="true" src=@("~/Images/" + img) id="navProfileImg" alt="User-Profile-Image" />
+                                    }
+                                    @*<img class="img-40 img-radius" src="~/adminAssets/images/avatar-4.jpg" alt="User-Profile-Image">*@
+                                    <div class="user-details">
+                                        <span>@name</span>
+                                        <span id="more-details">@_user.UserRole<i class="ti-angle-down"></i></span>
+                                    </div>
+                                </div>
+
+                                <div class="main-menu-content">
+                                    <ul>
+                                        <li class="more-details">
+                                            <a href="#"><i class="ti-user"></i>View Profile</a>
+                                            <a href="#!"><i class="ti-settings"></i>Settings</a>
+                                            <a href="auth-normal-sign-in.html"><i class="ti-layout-sidebar-left"></i>Logout</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            @*<div class="pcoded-search">
+                                    <span class="searchbar-toggle">  </span>
+                                    <div class="pcoded-search-box ">
+                                        <input type="text" placeholder="Search">
+                                        <span class="search-icon"><i class="ti-search" aria-hidden="true"></i></span>
+                                    </div>
+                                </div>*@
+                            <div class="pcoded-navigatio-lavel" data-i18n="nav.category.navigation">Layout</div>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <ul class="pcoded-item pcoded-left-item">
+                                    <li class="active">
+                                        <a asp-controller="Admin" asp-action="AdminHome">
+                                            <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                            <span class="pcoded-mtext" data-i18n="nav.dash.main">Dashboard</span>
+                                            <span class="pcoded-mcaret"></span>
+                                        </a>
+                                    </li>
+                                    <li class="active">
+                                        <a asp-controller="Courses" asp-action="index">
+                                            <span class="pcoded-micon"><i class="ti-agenda"></i><b>D</b></span>
+                                            <span class="pcoded-mtext" data-i18n="nav.dash.main">Courses</span>
+                                            <span class="pcoded-mcaret"></span>
+                                        </a>
+                                    </li>
+                                    <li class="pcoded-hasmenu">
+                                        <a href="javascript:void(0)">
+                                            <span class="pcoded-micon"><i class="ti-user"></i></span>
+                                            <span class="pcoded-mtext" data-i18n="nav.basic-components.main">Users</span>
+                                            <span class="pcoded-mcaret"></span>
+                                        </a>
+                                        <ul class="pcoded-submenu">
+                                            <li class=" ">
+                                                <a asp-action="Index" asp-controller="AllUsers">
+                                                    <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                                                    <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">All Users</span>
+                                                    <span class="pcoded-mcaret"></span>
+                                                </a>
+                                            </li>
+                                            <li class=" ">
+                                                <a asp-action="Index" asp-controller="Instructor">
+                                                    <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                                                    <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Instructors</span>
+                                                    <span class="pcoded-mcaret"></span>
+                                                </a>
+                                            </li>
+                                            <li class=" ">
+                                                <a asp-action="allStudents" asp-controller="Students">
+                                                    <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                                                    <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Students</span>
+                                                    <span class="pcoded-mcaret"></span>
+                                                </a>
+                                            </li>
+                                            <li class=" ">
+
+                                                <a asp-action="getActiveStudents" asp-controller="Admin">
+                                                    <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                                                    <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Student's Courses</span>
+                                                    <span class="pcoded-mcaret"></span>
+                                                </a>
+                                            </li>
+                                            <li class=" ">
+                                                <a asp-action="getActiveInstructor" asp-controller="Admin">
+                                                    <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                                                    <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Instructor's Courses</span>
+                                                    <span class="pcoded-mcaret"></span>
+                                                </a>
+                                            </li>
+
+
+                                        </ul>
+                                    </li>
+                                </ul>
+                            }
+                            else
+                            {
+                                <ul class="pcoded-item pcoded-left-item">
+                                    @*<li class="active">
+                                            <a asp-controller="Admin" asp-action="AdminHome">
+                                                <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                                <span class="pcoded-mtext" data-i18n="nav.dash.main">Dashboard</span>
+                                                <span class="pcoded-mcaret"></span>
+                                            </a>
+                                        </li>
+                                        <li class="">
+                                            <a asp-controller="Courses" asp-action="index">
+                                                <span class="pcoded-micon"><i class="ti-agenda"></i><b>D</b></span>
+                                                <span class="pcoded-mtext" data-i18n="nav.dash.main">Courses</span>
+                                                <span class="pcoded-mcaret"></span>
+                                            </a>
+                                        </li>*@
+                                    <li class="pcoded-hasmenu">
+                                        <a href="javascript:void(0)">
+                                            <span class="pcoded-micon"><i class="ti-agenda"></i></span>
+                                            <span class="pcoded-mtext" data-i18n="nav.basic-components.main">Courses</span>
+                                            <span class="pcoded-mcaret"></span>
+                                        </a>
+                                        <ul class="pcoded-submenu">
+
+                                            @* select user courses using view coponent *@
+                                            @{
+
+                                            }
+                                            @await Component.InvokeAsync("MyCourses")
+
+                                        </ul>
+                                    </li>
+                                </ul>
+                            }
+                        </div>
+                    </nav>
+                    <div class="pcoded-content">
+                        <div class="pcoded-inner-content">
+                            <div class="main-body">
+                                <div class="page-wrapper">
+
+                                    <div class="page-body">
+                                        <div class="row">
+                                            @RenderSection("graphs", required: false)
+
+                                            <div class="dynamicContent col-md-12">
+                                                <div class="card">
+                                                    @RenderBody()
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--------------->
+                                        <div id="toDrag">
+                                            <div id="cont">
+                                                <img class="user-img" style="box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2)" src="~/Images/cartoon-robot-toy-object-for-small-children-to-vector-32859441.jpg" />
+                                            </div>
+                                            <section class="chatbox" id="myApp">
+                                                <section class="chat-window" id="app">
+                                                </section>
+                                                <div id="con">
+                                                    <div id="loading">
+                                                    </div>
+
+                                                </div>
+                                                @if (User.IsInRole("Instructor") || User.IsInRole("Student"))
+                                                {
+                                                    <button onclick="contactAdmin()" id="contactAdmin" class="option">Click To Send To Admin</button>
+                                                }
+                                                    <form class="chat-input" onsubmit="return false;">
+                                                        <input onkeyup="test2(this.keyCode)" type="text" id="input" autocomplete="on" placeholder="Type a message" />
+                                                        <button id="bttn" onclick="test()">
+                                                            <img src="~/Images/send.png">
+                                                        </button>
+                                                    </form>
+                                                </section>
+                                        </div>
+                                        <!------------------>
+                                    </div>
+                                </div>
+
+                                <div id="styleSelector">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div class="fixed-button">
+                    <a href="" target="_blank" class="btn btn-md btn-primary">
+                        <i class="fa fa-shopping-cart" aria-hidden="true"></i> Upgrade To Pro
+                    </a>
+                </div>*@
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" id="form-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="btn-close btn-danger" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning Section Ends -->
+    <!-- Required Jquery -->
+    <script type="text/javascript" src="~/adminAssets/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="~/adminAssets/js/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="~/adminAssets/js/popper.js/popper.min.js"></script>
+    <script type="text/javascript" src="~/adminAssets/js/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery slimscroll js -->
+    <script type="text/javascript" src="~/adminAssets/js/jquery-slimscroll/jquery.slimscroll.js"></script>
+    <!-- modernizr js -->
+    <script type="text/javascript" src="~/adminAssets/js/modernizr/modernizr.js"></script>
+    <!-- am chart -->
+    <script src="~/adminAssets/pages/widget/amchart/amcharts.min.js"></script>
+    <script src="~/adminAssets/pages/widget/amchart/serial.min.js"></script>
+    <!-- Todo js -->
+    <script type="text/javascript " src="~/adminAssets/pages/todo/todo.js "></script>
+    <!-- Custom js -->
+    <script type="text/javascript" src="~/adminAssets/pages/dashboard/custom-dashboard.js"></script>
+    <script type="text/javascript" src="~/adminAssets/js/script.js"></script>
+    <script type="text/javascript " src="~/adminAssets/js/SmoothScroll.js"></script>
+    <script src="~/adminAssets/js/pcoded.min.js"></script>
+    <script src="~/adminAssets/js/demo-12.js"></script>
+    <script src="~/adminAssets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script>
+
+        setInterval(function () {
+            $('.refreshhere').load(document.URL + ' .refreshhere');
+        }, 1000)
+
+        var $window = $(window);
+        var nav = $('.fixed-button');
+        $window.scroll(function () {
+            if ($window.scrollTop() >= 200) {
+                nav.addClass('active');
+            }
+            else {
+                nav.removeClass('active');
+            }
+        });
+
+        function UpdateSeenUser() {
+            $('.badge').html('')
+        }
+
+
+
+
+
+        function UpdateSeen() {
+            setTimeout(function () {
+                $.ajax({
+                    type: "Get",
+                    url: '@Url.Action("UpdateSeen", "Admin")',
+                    contentType: "json",
+                    dataType: "json",
+                    success: function (Data) {
+
+
+                    },
+                    error: function (e) { console.log(e) }
+                });
+            }, 3000)
+            $('.badge').html('')
+
+        }
+
+
+
+
+
+    </script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/notify.min.js" asp-append-version="true"></script>
+    <script src="~/js/chat.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+
+</html>

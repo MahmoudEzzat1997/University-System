@@ -1,0 +1,18 @@
+@model List<Post>
+
+@{
+
+    ViewData["Title"] = "All Posts";
+    var crsid = ViewBag.crsid;
+    Layout = null;
+}
+
+
+<div id="ViewAll">
+ 
+    @await Html.PartialAsync("_allView.cshtml", Model)
+
+</div>
+
+
+
